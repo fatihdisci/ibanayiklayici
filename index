@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IBAN Ayıklayıcı</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      --card-bg: #ffffff;
+      --primary: #007acc;
+      --primary-dark: #005f99;
+      --text: #333333;
+      --field-bg: #f0f4f8;
+      --field-border: #d0d7df;
+      --result-bg: #eef6ff;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background: var(--bg-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
+      padding: 2rem;
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+    }
+    h1 {
+      font-size: 1.75rem;
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 1rem;
+      border: 1px solid var(--field-border);
+      border-radius: 8px;
+      background: var(--field-bg);
+      font-size: 1rem;
+      color: var(--text);
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    textarea:focus {
+      border-color: var(--primary);
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    button:hover {
+      background: var(--primary-dark);
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    .result {
+      display: none;
+      background: var(--result-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1.5rem;
+      border-left: 4px solid var(--primary);
+    }
+    .result p {
+      margin: 0.5rem 0;
+      font-size: 1rem;
+      color: var(--text);
+    }
+    .result span {
+      font-weight: 600;
+    }
+    @media (max-width: 480px) {
+      .card {
+        padding: 1.5rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>IBAN Ayıklayıcı</h1>
+    <textarea id="inputText" placeholder="Mesajı buraya yapıştırın..."></textarea>
+    <button onclick="extractIBAN()">Ayıkla</button>
+    <div class="result" id="outputArea">
+      <p><strong>IBAN:</strong> <span id="ibanResult"></span></p>
+      <p><strong>İsim-Soyisim:</strong> <span id="nameResult"></span></p>
+      <p><strong>Banka:</strong> <span id="bankResult"></span></p>
+    </div>
+  </div>
+
+  <script>
+    function extractIBAN() {
+      const text = document.getElementById("inputText").value;
+      const ibanMatch = text.match(/TR\d{24}/i);
+      const bankList = [
+        "Ziraat", "Vakıfbank", "Halkbank", "İş Bankası",
+        "Yapı Kredi", "Garanti", "Akbank", "TEB", "QNB", "Enpara"
+      ];
+      const bankRegex = new RegExp(bankList.join("|"), "i");
+      const bankMatch = text.match(bankRegex);
+      let name = text
+        .replace(/TR\d{24}/i, "")
+        .replace(bankRegex, "")
+        .trim()
+        .replace(/\s{2,}/g, " ");
+      document.getElementById("ibanResult").textContent = ibanMatch ? ibanMatch[0] : "Bulunamadı";
+      document.getElementById("bankResult").textContent = bankMatch ? bankMatch[0] : "Bulunamadı";
+      document.getElementById("nameResult").textContent = name || "Bulunamadı";
+      document.getElementById("outputArea").style.display = "block";
+    }
+  </script>
+</body>
+</html>
